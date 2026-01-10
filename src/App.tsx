@@ -1,0 +1,55 @@
+import { useState } from 'react'
+import './App.css'
+import WalletConnect from './components/WalletConnect'
+import Dashboard from './components/Dashboard'
+
+const CONTRACT_HASH = "c45e05818a0eaa3f21a9b26b480ec9da3d0a2ef5b77cb49571560853d07a3fba"
+const RPC_URL = "https://node.testnet.casper.network/rpc"
+
+function App() {
+  const [publicKey, setPublicKey] = useState<string | null>(null)
+  const [connected, setConnected] = useState(false)
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900">
+      <header className="bg-black bg-opacity-40 backdrop-blur-lg border-b border-blue-400 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-white">🏦 LiquidStake Loans</h1>
+            <p className="text-blue-200 text-sm">Shariah-Compliant DeFi on Casper</p>
+            <p className="text-blue-300 text-xs italic mt-1">An ethical, zero-interest lending primitive powered by liquid staking rewards.</p>
+          </div>
+          {connected && (
+            <div className="text-right">
+              <p className="text-blue-200">Connected</p>
+              <p className="text-white font-mono text-sm">{publicKey?.slice(0, 10)}...</p>
+            </div>
+          )}
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        {!connected ? (
+          <WalletConnect 
+            onConnect={(key) => {
+              setPublicKey(key)
+              setConnected(true)
+            }}
+          />
+        ) : (
+          <Dashboard 
+            publicKey={publicKey!}
+            contractHash={CONTRACT_HASH}
+            rpcUrl={RPC_URL}
+            onDisconnect={() => {
+              setPublicKey(null)
+              setConnected(false)
+            }}
+          />
+        )}
+      </main>
+    </div>
+  )
+}
+
+export default App
